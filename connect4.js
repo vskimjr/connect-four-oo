@@ -38,6 +38,8 @@ class Game {
 
     // creating the top row of the board that will register clicks
 
+    this.htmlBoard.innerText = '';
+
     const top = document.createElement("tr");
     top.setAttribute("id", "column-top");
 
@@ -48,7 +50,6 @@ class Game {
       top.append(headCell);
     }
 
-    this.htmlBoard.innerText = '';
     this.htmlBoard.append(top);
 
     // dynamically creates the main part of html board
@@ -96,7 +97,12 @@ class Game {
   /**  Check four cells to see if they're all color of current player
     - cells: list of four (y, x) cells
     - returns true if all are legal coordinates & all match currPlayer*/
-  _win(cells) {
+
+
+  /** checkForWin: check board cell-by-cell for "does a win start here?" */
+  checkForWin() {
+
+   const _win = (cells) =>  {
 
     return cells.every(
         ([y, x]) =>
@@ -108,9 +114,7 @@ class Game {
     );
   }
 
-  /** checkForWin: check board cell-by-cell for "does a win start here?" */
-  checkForWin() {
-
+  //const _win = _winReal.bind(this);
 
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
@@ -122,20 +126,22 @@ class Game {
         const diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
 
         // find winner (only checking each win-possibility as needed)
-        if (this._win(horiz) || this._win(vert)
-            || this._win(diagDR) || this._win(diagDL)) {
+        if (_win(horiz) ||
+            _win(vert) ||
+            _win(diagDR) ||
+            _win(diagDL)) {
           return true;
         }
       }
     }
-    return; //changed based on test but seems kind of weird (returned false)
+    return false;
   }
 
   /** handleClick: handle click of column top to play piece */
   handleClick(evt) {
     // get x from ID of clicked cell
     // added String to pass a test (test line 124)
-    const x = Number(String(evt.target.id).slice("top-".length));
+    const x = Number(evt.target.id.slice("top-".length));
 
     // get next spot in column (if none, ignore click)
     const y = this.findSpotForCol(x);
@@ -170,6 +176,7 @@ class Game {
 
 }
 
+new Game(6, 7);
 
 // original code appears below
 // const WIDTH = 7;
@@ -328,4 +335,3 @@ class Game {
 
 // start();
 
-new Game(6, 7);
