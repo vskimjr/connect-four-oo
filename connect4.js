@@ -7,17 +7,40 @@
  * board fills (tie)
  */
 
+class Player {
+  constructor(id, color){
+    this.id = id;
+    this.color = color;
+  }
+}
+
+ const player1 = new Player(1);
+ const player2 = new Player(2);
+
+ const form = document.querySelector("form");
+ form.addEventListener("submit", function(evt){
+  evt.preventDefault();
+  player1.color = document.getElementById("player1").value;
+  player2.color = document.getElementById("player2").value;
+  form.reset();
+ })
+
+
 
 
 class Game {
-  constructor (height, width){
+  constructor (height, width, player1, player2){
     this.height = height;
     this.width = width;
-    this.currPlayer = 1;
+    this.currPlayer = player1;
     this.board = [];
     this.htmlBoard = document.getElementById("board");
     this.startGame();
     this.gameOver = false;
+    this.player1 = player1;
+    this.player2 = player2;
+
+    //this.htmlBoard.style.backgroundColor = "green";
 
   }
 
@@ -95,7 +118,9 @@ class Game {
     if (!this.gameOver){
       const piece = document.createElement('div');
       piece.classList.add('piece');
-      piece.classList.add(`p${this.currPlayer}`);
+      piece.classList.add(`p${this.currPlayer.id}`);
+
+      piece.style.backgroundColor = this.currPlayer.color;
 
       const spot = document.getElementById(`c-${y}-${x}`);
       spot.append(piece);
@@ -123,7 +148,7 @@ class Game {
             y < this.height &&
             x >= 0 &&
             x < this.width &&
-            this.board[y][x] === this.currPlayer
+            this.board[y][x] === this.currPlayer.id
     );
   }
 
@@ -164,12 +189,12 @@ class Game {
     }
 
     // place piece in board and add to HTML table
-    this.board[y][x] = this.currPlayer;
+    this.board[y][x] = this.currPlayer.id;
     this.placeInTable(y, x);
 
     // check for win
     if (this.checkForWin()) {
-      return this.endGame(`Player ${this.currPlayer} won!`);
+      return this.endGame(`Player ${this.currPlayer.id} won!`);
     }
 
     // check for tie: if top row is filled, board is filled
@@ -179,13 +204,13 @@ class Game {
     }
 
     // switch players
-    this.currPlayer = this.currPlayer === 1 ? 2 : 1;
+    this.currPlayer = this.currPlayer === this.player1 ? this.player2 : this.player1;
   }
 
   /** Start game. */
 
   start() {
-    this.currPlayer = 1;
+    this.currPlayer = this.player1;
     this.gameOver = false;
     this.makeBoard();
     this.makeHtmlBoard();
@@ -193,7 +218,7 @@ class Game {
 
 }
 
-new Game(6, 7);
+new Game(6, 7, player1, player2);
 
 // original code appears below
 // const WIDTH = 7;
