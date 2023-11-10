@@ -16,13 +16,24 @@ class Game {
     this.currPlayer = 1;
     this.board = [];
     this.htmlBoard = document.getElementById("board");
-    this.start();
+    this.startGame();
+    this.gameOver = false;
+
   }
+
+
+  startGame() {
+    const startButton = document.getElementById('start-button');
+    startButton.addEventListener("click", this.start.bind(this));
+  }
+
+
 
   /** makeBoard: fill in 'board' property:
  *    board = array of rows, each row is array of cells  (board[y][x])
  */
   makeBoard() {
+    this.board = [];
     for (let y = 0; y < this.height; y++) {
       const emptyRow = Array.from({length: this.width}).fill(null);
       this.board.push(emptyRow);
@@ -46,7 +57,7 @@ class Game {
     for (let x = 0; x < this.width; x++) {
       const headCell = document.createElement("td");
       headCell.setAttribute("id", `top-${x}`);
-      headCell.addEventListener("click", this.handleClick);
+      headCell.addEventListener("click", this.handleClick.bind(this));
       top.append(headCell);
     }
 
@@ -81,12 +92,14 @@ class Game {
 
   /** placeInTable: update DOM to place piece into HTML table of board */
   placeInTable(y, x) {
-    const piece = document.createElement('div');
-    piece.classList.add('piece');
-    piece.classList.add(`p${this.currPlayer}`);
+    if (!this.gameOver){
+      const piece = document.createElement('div');
+      piece.classList.add('piece');
+      piece.classList.add(`p${this.currPlayer}`);
 
-    const spot = document.getElementById(`c-${y}-${x}`);
-    spot.append(piece);
+      const spot = document.getElementById(`c-${y}-${x}`);
+      spot.append(piece);
+    }
   }
 
   /** endGame: announce game end */
@@ -130,6 +143,7 @@ class Game {
             _win(vert) ||
             _win(diagDR) ||
             _win(diagDL)) {
+          this.gameOver = true;
           return true;
         }
       }
@@ -160,6 +174,7 @@ class Game {
 
     // check for tie: if top row is filled, board is filled
     if (this.board[0].every(cell => cell !== null)) {
+      this.gameOver = true;
       return this.endGame('Tie!');
     }
 
@@ -170,6 +185,8 @@ class Game {
   /** Start game. */
 
   start() {
+    this.currPlayer = 1;
+    this.gameOver = false;
     this.makeBoard();
     this.makeHtmlBoard();
   }
